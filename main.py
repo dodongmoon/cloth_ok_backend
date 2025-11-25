@@ -18,6 +18,22 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# 디버깅용: 모든 서버 에러를 자세히 보여줌
+from fastapi import Request
+from fastapi.responses import JSONResponse
+import traceback
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": str(exc),
+            "type": type(exc).__name__,
+            "traceback": traceback.format_exc()
+        },
+    )
+
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
