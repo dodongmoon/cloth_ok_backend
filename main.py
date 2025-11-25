@@ -53,6 +53,22 @@ async def health_check():
     return {"status": "healthy"}
 
 
+@app.get("/debug/db")
+async def debug_db():
+    try:
+        from sqlalchemy import text
+        from app.db.base import SessionLocal
+        db = SessionLocal()
+        try:
+            # 간단한 쿼리 실행
+            result = db.execute(text("SELECT 1"))
+            return {"status": "ok", "result": result.scalar()}
+        finally:
+            db.close()
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+
+
 # 나중에 추가할 라우터들
 from app.api import notifications
 app.include_router(notifications.router, prefix=f"{settings.API_V1_STR}/notifications", tags=["알림 (Notifications)"])

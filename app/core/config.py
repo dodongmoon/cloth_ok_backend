@@ -28,8 +28,13 @@ class Settings(BaseSettings):
     @field_validator("DATABASE_URL", mode="before")
     @classmethod
     def assemble_db_connection(cls, v: Optional[str]) -> Any:
-        if isinstance(v, str) and v.startswith("postgres://"):
-            return v.replace("postgres://", "postgresql://", 1)
+        if isinstance(v, str):
+            # Railway가 제공하는 postgres:// 를 postgresql+psycopg2:// 로 변경
+            if v.startswith("postgres://"):
+                return v.replace("postgres://", "postgresql+psycopg2://", 1)
+            # postgresql:// 도 postgresql+psycopg2:// 로 변경 (명시적 드라이버 지정)
+            if v.startswith("postgresql://"):
+                return v.replace("postgresql://", "postgresql+psycopg2://", 1)
         return v
 
     class Config:
