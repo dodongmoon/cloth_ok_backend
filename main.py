@@ -60,9 +60,10 @@ async def debug_db():
         from app.db.base import SessionLocal
         db = SessionLocal()
         try:
-            # 테이블 확인
-            result = db.execute(text("SELECT count(*) FROM users"))
-            return {"status": "ok", "user_count": result.scalar()}
+            # 사용자 목록 확인
+            result = db.execute(text("SELECT email FROM users"))
+            emails = [row[0] for row in result]
+            return {"status": "ok", "user_count": len(emails), "emails": emails}
         finally:
             db.close()
     except Exception as e:
