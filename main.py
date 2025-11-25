@@ -60,9 +60,9 @@ async def debug_db():
         from app.db.base import SessionLocal
         db = SessionLocal()
         try:
-            # 간단한 쿼리 실행
-            result = db.execute(text("SELECT 1"))
-            return {"status": "ok", "result": result.scalar()}
+            # 테이블 확인
+            result = db.execute(text("SELECT count(*) FROM users"))
+            return {"status": "ok", "user_count": result.scalar()}
         finally:
             db.close()
     except Exception as e:
