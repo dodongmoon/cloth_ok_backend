@@ -53,21 +53,7 @@ async def health_check():
     return {"status": "healthy"}
 
 
-@app.get("/debug/db")
-async def debug_db():
-    try:
-        from sqlalchemy import text
-        from app.db.base import SessionLocal
-        db = SessionLocal()
-        try:
-            # 사용자 목록 확인
-            result = db.execute(text("SELECT email FROM users"))
-            emails = [row[0] for row in result]
-            return {"status": "ok", "user_count": len(emails), "emails": emails}
-        finally:
-            db.close()
-    except Exception as e:
-        return {"status": "error", "detail": str(e)}
+
 
 
 # 나중에 추가할 라우터들
