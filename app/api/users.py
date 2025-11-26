@@ -110,3 +110,24 @@ def get_user(
     
     return user
 
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+def delete_me(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    현재 로그인한 사용자의 계정을 삭제합니다.
+    
+    **인증 필요**: Authorization 헤더에 Bearer 토큰 필요
+    """
+    success = user_service.delete_user(db, current_user.id)
+    
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="사용자를 찾을 수 없습니다"
+        )
+    
+    return None
+

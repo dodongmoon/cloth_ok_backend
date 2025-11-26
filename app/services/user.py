@@ -22,7 +22,7 @@ def create_user(db: Session, user: UserCreate):
     return db_user
 
 def update_user(db: Session, user_id: int, user_update: UserUpdate):
-    db_user = get_user(db, user_id)
+    db_user = get_user_by_id(db, user_id)
     if not db_user:
         return None
     
@@ -37,3 +37,26 @@ def update_user(db: Session, user_id: int, user_update: UserUpdate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+def delete_user(db: Session, user_id: int):
+    db_user = get_user_by_id(db, user_id)
+    if not db_user:
+        return False
+    
+    # 1. 친구 관계 삭제
+    from app.models.friendship import Friendship
+    from sqlalchemy import or_
+    db.query(Friendship).filter(
+        or_(Friendship.user_id_1 == user_id, Friendship.user_id_2 == user_id)
+    ).delete(synchronize_session=False)
+    
+    # 2. 아이템 삭제 (빌려준 거, 빌린 거 모두)
+    from app.models.cloth_item import ClothItem
+    db.query(ClothItem).filter(
+        or_(ClothItem.borrower_id == user_id, ClothItem.lender_id == user_id)
+    ).delete(synchronize_session=False)
+    
+    # 3. 사용자 삭제
+    db.delete(db_user)
+    db.commit()
+    return True
