@@ -65,6 +65,11 @@ async def root():
     }
 
 
+@app.on_event("startup")
+async def startup_event():
+    print("Backend started! Version 1.0.1 - Refresh Token Fix Applied")
+
+
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
