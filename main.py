@@ -14,6 +14,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    # Trigger redeploy
     description="옷 대출/반납 관리 API",
     version="1.0.0"
 )
